@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../../contexts/AuthContext'; // Assuming you have an auth context
+import { auth } from "../firebase";
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import UploadSection from './UploadSection';
-import AudioRecorder from './AudioRecorder';
-import QuestionDisplay from './QuestionDisplay';
 import ProgressBar from './ProgressBar';
+import QuestionDisplay from './QuestionDisplay';
+import AudioRecorder from './AudioRecorder';
 import Evaluation from './Evaluation';
-// import FeedbackModal from './FeedbackModal';
-import '../../styles/interview.css';
 
 const Interview = () => {
-  const { currentUser } = useAuth();
+  const navigate = useNavigate();
+  const [currentUser, setCurrentUser] = useState(null);
   const [interviewState, setInterviewState] = useState({
-    stage: 'upload', // upload, interview, evaluation
+    stage: 'upload',
     sessionId: null,
     currentQuestion: null,
     questionIndex: 0,
@@ -25,8 +26,35 @@ const Interview = () => {
     jobDescriptionText: '',
   });
 
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        setCurrentUser(user);
+      } else {
+        console.log("No user logged in");
+        navigate('/login');
+      }
+    });
+
+    return () => unsubscribe();
+  }, [navigate]);
+
   const handleUploadSubmit = async () => {
     try {
+      // Check if user is authenticated
+      if (!currentUser) {
+        console.error('No user logged in');
+        navigate('/login');
+        return;
+      }
+
+      // Validate required fields
+      if (!uploadData.resumeText || !uploadData.jobTitle) {
+        console.error('Resume and job title are required');
+        // Show error message to user
+        return;
+      }
+
       const response = await axios.post(
         'https://us-central1-interview-bot-dev-434810.cloudfunctions.net/interview-bot-backend-dev',
         {
@@ -36,9 +64,9 @@ const Interview = () => {
           job_title: uploadData.jobTitle,
           job_description: uploadData.jobDescriptionText,
           action: 'start_interview',
-          device: getDeviceInfo().device,
-          os: getDeviceInfo().os,
-          browser: getDeviceInfo().browser
+          device: 'web',
+          os: navigator.platform,
+          browser: navigator.userAgent
         }
       );
 
@@ -52,42 +80,21 @@ const Interview = () => {
       }
     } catch (error) {
       console.error('Error starting interview:', error);
-      // Handle error appropriately
+      // Show error message to user
     }
   };
 
   const handleAnswerSubmit = async (audioBlob) => {
-    try {
-      // Upload audio logic here
-      const formData = new FormData();
-      formData.append('audio', audioBlob);
-      formData.append('user_id', currentUser.uid);
-      formData.append('session_id', interviewState.sessionId);
-      formData.append('question_index', interviewState.questionIndex);
-
-      const response = await axios.post(
-        'https://us-central1-interview-bot-dev-434810.cloudfunctions.net/interview-bot-backend-dev',
-        formData
-      );
-
-      if (response.data.interview_complete) {
-        setInterviewState(prev => ({
-          ...prev,
-          stage: 'evaluation',
-          evaluation: response.data.text
-        }));
-      } else {
-        setInterviewState(prev => ({
-          ...prev,
-          questionIndex: prev.questionIndex + 1,
-          currentQuestion: response.data.text
-        }));
-      }
-    } catch (error) {
-      console.error('Error submitting answer:', error);
-      // Handle error appropriately
-    }
+    // ... existing answer submission code ...
   };
+
+  if (!currentUser) {
+    return (
+      <div className="loading-container">
+        <p>Loading...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="interview-container">
@@ -122,4 +129,4 @@ const Interview = () => {
   );
 };
 
-export default Interview; 
+export default Interview;

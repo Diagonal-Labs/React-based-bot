@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { useAuth } from '../../contexts/AuthContext';
+import { auth } from "../firebase";
 import '../../styles/interview.css';
 import axios from 'axios';
 
 const FeedbackModal = ({ sessionId, onClose }) => {
-  const { currentUser } = useAuth();
+  const { currentUser } = auth.currentUser; 
   const [feedback, setFeedback] = useState({});
 
   const feedbackQuestions = [

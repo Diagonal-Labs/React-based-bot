@@ -9,6 +9,9 @@
 .upload-section {
   text-align: center;
   margin-bottom: 30px;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
 }
 
 .dropzone {
@@ -18,10 +21,75 @@
   margin: 15px 0;
   cursor: pointer;
   transition: border-color 0.3s ease;
+  text-align: center;
+  margin-bottom: 10px;
 }
 
 .dropzone:hover {
   border-color: #666;
+}
+
+/* Uploaded File Styles */
+.uploaded-file {
+  margin-top: 10px;
+  padding: 10px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.uploaded-file p {
+  margin: 0;
+  color: #333;
+}
+
+.uploaded-file-name {
+  margin-top: 8px;
+  font-size: 0.9em;
+  color: #4CAF50;
+}
+
+.remove-file {
+  background-color: #ff4444;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.remove-file:hover {
+  background-color: #cc0000;
+}
+
+/* Job Title Input Styles */
+.job-title-input {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #cccccc;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+/* Start Button Styles */
+.start-button {
+  width: 100%;
+  padding: 12px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-top: 20px;
+  transition: background-color 0.3s ease;
+}
+
+.start-button:hover {
+  background-color: #45a049;
 }
 
 /* Audio Recorder Styles */
@@ -153,9 +221,16 @@
   overflow-y: auto;
 }
 
+/* Header Styles */
+h2 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 20px;
+}
+
 /* Animations */
 @keyframes pulse {
   0% { transform: scale(1); }
   50% { transform: scale(1.05); }
   100% { transform: scale(1); }
-} 
+}
